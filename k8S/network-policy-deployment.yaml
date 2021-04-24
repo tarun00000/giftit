@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: 
+  name: db-network-policy
+spec:
+  podSelector: 
+    matchLabels:
+      app: giftit-db
+      environment: minikube
+      tier: db
+  ingress: 
+  - from:
+    - namespaceSelector: {}  #allow all namespace
+      podSelector:
+        matchLabels:
+          app: giftit-backend
+          environment: minikube
+          tier: backend
+  egress: 
+  - to:
+    - namespaceSelector: {}  #allow all namespace
+      podSelector:
+        matchLabels:
+          app: giftit-backend
+          environment: minikube
+          tier: backend

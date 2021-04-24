@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: giftit-jenkins
+  labels:
+    app: giftit
+    environment: minikube
+    tier: Jenkins
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: giftit
+      environment: minikube
+      tier: Jenkins
+  template:
+    metadata:
+      labels:
+        app: giftit
+        environment: minikube
+        tier: Jenkins
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+        # runAsGroup: 3000
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: "giftit-jenkins"
+        image: jenkins/jenkins:lts
+        ports:
+          - containerPort: 8080
+        imagePullPolicy: IfNotPresent
+        # livenessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: 80
+        #   initialDelaySeconds: 80
+        #   periodSeconds: 5          
+        volumeMounts:
+          - mountPath: "/var/jenkins_home"
+            name: postgre-volume   
+      initContainers:
+      - name: init-chown
+        image: jenkins/jenkins:lts
+        ports:
+          - containerPort: 8080
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsUser: 0
+        command: ["/sbin/tini"]
+        args: ["--","chown" ,"-R", "1000:1000","/var/jenkins_home"]
+
+        volumeMounts:
+          - mountPath: "/var/jenkins_home"
+            name: postgre-volume    
+      nodeSelector:
+        kubernetes.io/hostname: gke-giftit-pool-1-3395c556-fkvo
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: docker-hub
+      volumes:
+        - name: postgre-volume
+          persistentVolumeClaim:
+            claimName: jenkins-pvc
+      #kubectl exec -it giftit-jenkins-67ddc9b9db-q6hcx head /var/jenkins_home/secrets/initialAdminPassword   e621b693ee6449cf9a0fc0b04177eeb6

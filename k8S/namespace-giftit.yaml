@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: giftit
+
+---
+# below will got to whole namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: resource-quota-giftit
+spec:
+  hard:
+    requests.cpu: 0.7 # # maximum individual to all containers
+    requests.memory: 1500 #aximum individual to all containers
+    limits.cpu: 0.9 # maximum combied to all containers
+    limits.memory: 2048 # maximum combied to all containers
+
+---
+#below will restrict to individual containers
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: limitrange-giftit
+spec:
+  limits:
+    - default: #set the default limits
+        cpu: 1.0
+        memory: 2024Mi
+      defaultRequest:
+        cpu: 1.0
+        memory: 500Mi
+      max:
+        cpu: 1.0
+        memory: 2024Mi
+      min:
+        cpu: 10m 
+        memory: 10Mi
+      type: Container

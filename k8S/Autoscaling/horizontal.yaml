@@ -1,0 +1,17 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: postgre-scaler
+spec:
+  maxReplicas: 3
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: deployment 
+    name: giftit-backend
+  targetCPUUtilizationPercentage: 3
+  # metrics: # work for memory
+  # - type: Resource
+  #   resource:
+  #     name: memory
+  #     targetAverageUtilization: 60

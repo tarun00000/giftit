@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: giftit-backend
+  labels:
+    app: giftit
+    environment: minikube
+    tier: backend
+spec:
+  replicas: 1 # make sure on pod always , if not mentioned in deployment default is 1
+  selector:
+    matchLabels:
+      app: giftit-backend
+      environment: minikube
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: giftit-backend
+        environment: minikube
+        tier: backend
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: "giftit-backend"
+        image: tarun00000/giftit:v20210121_5
+        ports:
+          - containerPort: 8080
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: 500Mi
+            cpu: 0.2
+          limits:
+            memory: 700Mi
+            cpu: 1.0       
+        # lifecycle:
+        #   preStop:
+        #     exec:
+        #       command: [ "/bin/sleep", "1" ] # custom command prestop before GIGTEM will be send
+        #   postStart:
+        #     exec:
+        #       command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]
+        # livenessProbe:
+        #   httpGet:
+        #     path: /vendors
+        #     port: 8080
+        #   exec:
+        #     command:
+        #     - cat
+        #   tcpSocket:
+        #     port: 31000
+          # initialDelaySeconds: 80
+          # periodSeconds: 5
+
+        # env: # not in used right now
+        #     - name: DB_URL
+        #       value: "jdbc:postgresql://postgre-db-service:5432/postgres"
+        #     - name: DB_USERNAME
+        #       value: "postgres"
+        #     - name: DB_PASSWORD
+        #       value: "admin"
+        envFrom:
+            - configMapRef:
+                name: giftit-backend-configmap
+        volumeMounts:
+          - name: db-config   
+            mountPath: /dbconfig/db_config
+            # readOnly: true
+        # env:
+        #   - name: DB_PASSWORD
+        #     valueFrom:
+        #       SecretKeyRef:
+        #         name: giftit-backend-configmap
+        #         key: DB_PASSWORD
+
+        # env:
+        # - name: MY_NAMESPACE
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: metadata.namespace
+        # - name: spring_profiles_active
+      # initContainers:
+      #   - name: init-chown
+      #     image: busybox
+      #     command: ['sh', '-c', 'echo The app is running! && sleep 15']
+          
+      volumes: 
+        - name: db-config 
+          configMap:
+            name: giftit-backend-configmap
+            

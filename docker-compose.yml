@@ -1,0 +1,41 @@
+version: '3.6'
+services:
+  giftit:
+    build: .
+    image: tarun00000/giftit:v20210121_5
+    ports:
+     - "8080:8080"
+    # expose:
+    #  - "8080"    
+    restart: on-failure
+    depends_on:
+      - postgres
+      #postgres:
+        #condition: service_healthy      
+        #condition: service_started
+    container_name: gifit    
+    network_mode: "host"
+    stdin_open: true
+    tty: true
+
+  postgres:
+    image: postgres
+    network_mode: "host"
+    ports:
+    - "5432:5432"
+    restart: on-failure
+    container_name: postgres 
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: admin
+        POSTGRES_DB: POSTGRESQL
+        PGDATA: /var/lib/postgresql/data/pgdata 
+        POSTGRES_DATABASE: POSTGRESQL  
+    volumes:
+     - type: volume
+       source: postgres-volume
+       target: /var/lib/postgresql
+    tty: true
+
+volumes:
+  postgres-volume:

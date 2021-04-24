@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-db-configmap
+  labels:
+    app: postgres-db
+    environment: minikube
+    tier: db
+data:
+  POSTGRES_DB: POSTGRESQL
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: admin

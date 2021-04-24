@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: giftit-backend-configmap
+  labels:
+    app: giftit-backend
+    environment: minikube
+    tier: backend
+data:
+  #DB_URL: jdbc:postgresql://192.168.99.100:31001/postgres # for this tru minikube service list to get node ip
+  DB_URL: jdbc:postgresql://postgre-db-service:5432/postgres
+  DB_USERNAME: postgres
+  DB_PASSWORD: admin
+  db_config.file: |
+    DB_URL jdbc:postgresql://postgre-db-service:5432/postgres
+    DB_USERNAME postgres
+    DB_PASSWORD admin

@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: testjob
+spec:
+  completions: 6
+  parallelism: 3
+  template:
+    metadata:
+      name: test
+    spec:
+      containers:
+      - name: test
+        image: busybox # cant change . This immutable
+        command: ["/bin/sh","-c"]
+        args: ["echo 'consuming a message'; sleep $(shuf -i 5-10 -n 1)"]
+      restartPolicy: OnFailure
